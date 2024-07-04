@@ -1,20 +1,18 @@
-# OpenVINO Chatbot using RAG (PDF)
+# Chatbot using RAG (PDF)
 
 ## Description
 
-This project demonstrates how to extend the LLM models' capability to answer a question related to a given document.
-The project consists of two programs. One is for preparation, and the other is for question and answering using LLM.
-The preparation program will read a PDF file and generate a database (vector store).
-The LLM model will pick up a collection of a fraction of the input document that is related to the given query from the user and then answer the query by referring to the picked-up documents. This technique is so called RAG (Retrieval Augmented Generation).
+This project demonstrates how to extend the capabilities of LLM models to answer questions related to a given document. The project consists of two main programs: one for preparation and the other for question-and-answering using LLM.
+
+The preparation program reads a PDF file and generates vectors, which are then fed to the selected model. The model uses these special tokens to answer questions related to the document.
 
 ## Programs/Files
 
-|#|file name|description|
-|---|---|---|
-|1|`vectorstore_generator.py`|Reads a PDF file and generates a vectorstore.<br>You can modify this program to make it read and use the other document file format in this RAG chatbot demo.|
-|2|`openvino-chatbot-rag-pdf.py`|LLM chatbot using OpenVINO. Answer to the query by refeering a vectorstore.|
-|3|`llm-model-downloader.py`|Downloads LLM models from HuggingFace and converts them into OpenVINO IR models.<br>This program downloads follosing models by default:<br>* `dolly-v2-3b`<br>* `neural-chat-7b-v3-1`<br>* `tinyllama-1.1b-chat-v0.6`<br>* `youri-7b-chat`.<br>You can download `llama2-7b-chat` by uncomment some lines in the code.|
-|4|`.env`|Some configurations (model name, model precision, inference device, etc)|
+| #  | File Name                 | Description                                                                                       |
+|----|---------------------------|---------------------------------------------------------------------------------------------------|
+| 1  | `pdf_reader.py`           | LLM chatbot using OpenVINO that answers queries by referring to a vectorstore.                    |
+| 2  | `llm-model-downloader.py` | Downloads LLM models from HuggingFace and converts them into OpenVINO IR models. Use hugging face to edit which models you want to download and use(edit them in the environment variables and this file)|
+| 3  | `.env`                    | Contains configurations (model name, model precision, inference device, etc.)                     |
 
 ## How to run
 0. Install prerequisites
@@ -35,30 +33,14 @@ If you don't want to download many LLM models, you can comment out the models in
 phthon llm-model-downloader.py
 ```
 
-2. Preparation - Read a PDF file and generate a vectorstore
+2. Run streamlit app
 
 ```sh
-python vectorstore_generator.py -i input.pdf
-```
-`./vectorstore_{pdf_basename}` directory will be created. The data of the vectorstore will be stored in the directory. E.g. `./vectorstore_input`.
-![generation](./resources/generation.png)
-
-3. Run LLM Chatbot
-
-```sh
-python openvino-chatbot-rag-pdf.py -v vectorstore_input
-```
-![chatbot](./resources/chatbot.png)
-
-## Appendix - vectorstore (retriever) test tool
-
-You can check which fraction of the input documents are picked up from the vectorstore based on the input query.
-```sh
-python test_vectorstore.py -v vectorstore_hoge
+streamlit run pdf_reader.py
 ```
 
-![test_vectorstore](./resources/test_vectorstore.png)
-## Test environment
-
-- Windows 11
-- OpenVINO 2023.2.0
+Inspired from "https://github.com/yas-sim/openvino-chatbot-rag-pdf"
+Tested various heavier models like Llama, Gemma and Mistral
+Built a streamlit front end where you can upload the pdf file
+Tested various other chunking strategies
+Used a vector database(Pinecone) to help accommodate larger multiple files instead of a single file
